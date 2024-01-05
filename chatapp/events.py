@@ -18,8 +18,14 @@ def handle_user_join(username):
 @socketio.on("new_message")
 def handle_new_message(message):
     print(f"New message: {message}")
-    username = None 
-    for user in users:
-        if users[user] == request.sid:
-            username = user
-    emit("chat", {"message": message, "username": username}, broadcast=True)
+    if message[:2] == "@@":
+        tmp = message.split(" ")[1]
+        ret = (int(tmp[0]), int(tmp[1])) ## 定位
+        print(ret)
+        emit("light_table", {"locate":ret})
+    else:
+        username = None 
+        for user in users:
+            if users[user] == request.sid:
+                username = user
+        emit("chat", {"message": message, "username": username}, broadcast=True)
