@@ -14,6 +14,7 @@
             height: 100vh;
             background-color: #e5e5e5;
         }
+    
 
         #chat {
             width: 50%;
@@ -47,9 +48,19 @@
         <input type="text" id="username" placeholder="Username">
         <button id="join-btn">JOIN</button>
     </div>
-
+    <div id="table" style="display:none;">
+        <table>
+            <!-- 创建 9 行 7 列的表格 -->
+            {% for row in table_data %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
     <div id="chat" style="display:none;">
-
         <ul id="chat-messages">
         </ul>
         <input type="text" id="message" placeholder="Enter a Message">
@@ -67,6 +78,7 @@
             })
 
             document.getElementById("chat").style.display = "block";
+            document.getElementById("table").style.display = "block";
             document.getElementById("landing").style.display = "none";
         })
 

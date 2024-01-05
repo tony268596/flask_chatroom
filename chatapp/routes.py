@@ -9,4 +9,5 @@ main = Blueprint("main", __name__)
 
 @main.route("/")
 def index():
-    return render_template("index.html")
+    table_data = [[i for i in range(7)] for _ in range(9)]
+    return render_template("index.html", table_data=table_data)
