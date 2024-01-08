@@ -45,6 +45,8 @@ def handle_new_message(message):
         tmp = message.split(" ")[0]
         date = message.split(" ")[1]
         time = message.split(" ")[2]
+        tmptime = time.split(",")
+        time1, time2 = tmptime[0], tmptime[0] if len(tmptime) == 1 else tmptime[1]
         if tmp != "add"and tmp != "del" and tmp != "pri":
             emit("error", f"syntax error")
         else:
@@ -58,9 +60,7 @@ def handle_new_message(message):
                         emit("error", f"collison with {check}'s private time")
                     else:
                         emit("light_table", {"locate":(i, y_lael), "color":"rgb" + "(241, 167, 167)"}, broadcast=True)
-                tmptime = time.split(",")
-                time1, time2 = tmptime[0], tmptime[0] if len(tmptime) == 1 else tmptime[1]
-                emit("chat", {"message":f"{user} add project time {time1} to {time2}", "color":"rgb" + "(241, 167, 167)"}, broadcast=True)
+                        emit("chat", {"message":f"{user} add project time {time1} to {time2}", "color":"rgb" + "(241, 167, 167)"}, broadcast=True)
             elif tmp == "del":
                 y_lael = weektolocate(date)
                 start, end = timetolocate(time)
@@ -69,6 +69,7 @@ def handle_new_message(message):
                     if username == tmp:
                         lock[str(y_lael)].pop((i, y_lael, tmp))
                         emit("light_table", {"locate":(i, y_lael), "color":"white"}, broadcast=True)
+                        emit("chat", {"message":f"{tmp} add project time {time1} to {time2}", "color":"black"}, broadcast=True)
                     ## username不在lock 中 == 沒有東西/是lab的東西
                     # elif tmp == False:
                     #     emit("light_table", {"locate":(i, y_lael), "color":"white"}, broadcast=True)
@@ -80,6 +81,7 @@ def handle_new_message(message):
                 for i in range(start, end+1):
                     lock[str(y_lael)].append((i, y_lael, username))
                     emit("light_table", {"locate":(i, y_lael), "color":"rgb" + f"{color}"}, broadcast=True)
+                    emit("chat", {"message":f"{user} add project time {time1} to {time2}", "color":"rgb" + f"{color}"}, broadcast=True)
     else:
         emit("chat", {"message": message, "username": username, "color":"rgb" + f"{color}"}, broadcast=True)
 
