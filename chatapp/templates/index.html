@@ -14,6 +14,7 @@
             align-items: center;
             height: 100vh;
             background-color: #e5e5e5;
+            font-family: "Arial"
         }
         
         tr, td {
@@ -34,10 +35,12 @@
 
         #chat {
             width: 50%;
+            font-family: "Arial"
         }
 
         #chat input {
             width: 99%;
+            font-family: "Arial"
         }
 
         ul {
@@ -57,12 +60,40 @@
             flex-direction: column;
             gap: 10px;
         }
+
+        #info {
+            font-family: "Arial";
+            font-size: 15px;
+            text-align: left;
+        }
+
+        #update_users {
+            font-family: "Arial";
+            font-size: 15px;
+            text-align: left;
+        }
+        
+        #container {
+            width: 30%;
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
-    <div id="landing">
+    <div id="landing" >
         <input type="text" id="username" placeholder="Username">
         <button id="join-btn">JOIN</button>
+    </div>
+    <div id="container" style="display:none;">
+        <div id="info">
+            --使用@@新增指令--<br>
+            @@add date time -> 新增project time <br>
+            @@del date time -> 刪除 time <br>
+            @@pri date time -> 新增private time<br>
+        </div>
+        <div id="update_users"> 
+        </div>
     </div>
     <div id="table" style="display:none;">
         <table>
@@ -113,6 +144,7 @@
                 socket.emit("user_join", username);
             })
 
+            document.getElementById("container").style.display = "block";
             document.getElementById("chat").style.display = "block";
             document.getElementById("table").style.display = "block";
             document.getElementById("landing").style.display = "none";
@@ -159,7 +191,7 @@
             
             li.style.color = data["color"]
             if (data["username"]){
-                li.appendChild(document.createTextNode(data["username"] + ": " + data["message"]));
+                li.appendChild(document.createTextNode("> " + data["username"] + ": " + data["message"]));
             }else{
                 li.appendChild(document.createTextNode(data["message"]));
             }
@@ -181,6 +213,18 @@
 
         socket.on("error", function(data){
             alert(data)
+        })
+
+        socket.on("update_users", function(data){
+            let usrlist = document.getElementById("update_users");
+            usrlist.innerHTML = ""
+
+            Object.keys(data).forEach(function(username) {
+            var userItem = document.createElement('div');
+            userItem.textContent = username;
+            userItem.style.color = data[username]; // 設置文字顏色（如果需要）
+            usrlist.appendChild(userItem);
+        });
         })
     </script>
 </body>

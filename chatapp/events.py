@@ -31,6 +31,10 @@ def handle_user_join(username):
         trans.user_color(setting.storage, username, f"rgb{colorsett[-1]}")
         colorsett.pop()
 
+        data = trans.read_json_file(setting.storage)
+        usr = data.get("user", [])
+        emit("update_users", usr, broadcast=True)
+
 # 收到new message 指令，回傳一行dist給chat
 @socketio.on("new_message")
 def handle_new_message(message):
