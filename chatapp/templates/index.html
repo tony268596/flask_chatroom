@@ -110,14 +110,36 @@
             document.getElementById("landing").style.display = "none";
         })
         
+        let commandHistory = []; // List to store commands
+        let commandIndex = 0;
+
         document.getElementById("message").addEventListener("keyup", function (event) {
+            console.log(commandIndex)
             if (event.key == "Enter") {   
                 let message = document.getElementById("message").value;
                 if (message != ""){
                     socket.emit("new_message", message);
+                    commandHistory.push(message);
+                    commandIndex++;
                     document.getElementById("message").value = "";
                 }
-            }
+            }else if (event.key == "ArrowUp"){
+                if (commandHistory.length >= 0 && commandIndex >= 0) {
+                    commandIndex--; // Move to the previous command
+                    if (commandIndex == -1){
+                        document.getElementById("message").value = "";
+                    }else{
+                    document.getElementById("message").value = commandHistory[commandIndex]; // Set the input field value
+                    }
+                }
+             }else if (event.key == "ArrowDown"){
+                if (commandHistory.length > 0 && commandIndex < commandHistory.length) {
+                    commandIndex++; // Move to the next command
+                    document.getElementById("message").value = commandHistory[commandIndex]; // Set the input field value
+                }else{
+                    document.getElementById("message").value = "";
+                }
+             }
         })
         
         // 定義chat這個function

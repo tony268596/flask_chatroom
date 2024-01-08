@@ -12,6 +12,7 @@ colorsett = [(16,109,156),
              (61,89,171),
              (128,42,42)]
 
+# 用dict存他搜尋比較快
 lock = {"1":[], "2":[], "3":[],"4":[], "5":[], "6":[],"7":[]}
 lastcommand = []
 
@@ -44,7 +45,7 @@ def handle_new_message(message):
         tmp = message.split(" ")[0]
         date = message.split(" ")[1]
         time = message.split(" ")[2]
-        if tmp != "add"or tmp != "del" or tmp != "pri":
+        if tmp != "add"and tmp != "del" and tmp != "pri":
             emit("error", f"syntax error")
         else:
             if tmp == "add":
