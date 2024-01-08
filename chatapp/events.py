@@ -1,6 +1,7 @@
 from flask import request
 from flask_socketio import emit
-
+import chatapp.tmp as trans
+import chatapp.setting as setting
 from .extensions import socketio
 
 users = {}
@@ -24,9 +25,10 @@ def handle_connect():
 def handle_user_join(username):
     print(f"User {username} joined!")
     if len(colorsett) == 0:
-        print("userfull")
+        emit("error", "userfull")
     else:
         users[username] = (request.sid, colorsett[-1])
+        trans.user_color(setting.storage, username, f"rgb{colorsett[-1]}")
         colorsett.pop()
 
 # 收到new message 指令，回傳一行dist給chat
@@ -45,48 +47,61 @@ def handle_new_message(message):
         tmp = message.split(" ")[0]
         date = message.split(" ")[1]
         time = message.split(" ")[2]
-        tmptime = time.split(",")
-        time1, time2 = tmptime[0], tmptime[0] if len(tmptime) == 1 else tmptime[1]
+        ## 
+        time1, time2 = timetolocate(time)
+        ## 這裡把table存進來了
+        mat = trans.load_table(setting.storage)
+        ccc = 0 # 衝突check
         if tmp != "add"and tmp != "del" and tmp != "pri":
             emit("error", f"syntax error")
         else:
             if tmp == "add":
                 y_lael = weektolocate(date)
                 start, end = timetolocate(time)
+
+                # check 是否有使用者
                 for i in range(start, end+1):
-                    #找list中有沒有這時間使用者
-                    check = find_username((i, y_lael), lock[str(y_lael)])
-                    if check:
-                        emit("error", f"collison with {check}'s private time")
-                    else:
+                    if mat[i][y_lael]:
+                        ccc = 1
+                if ccc: #有衝突
+                    emit("error", f"collison with {mat[i][y_lael]}'s private time")#############################################
+                else: #無衝突
+                    for i in range(start, end+1):
+                        mat[i][y_lael].append("Project")
                         emit("light_table", {"locate":(i, y_lael), "color":"rgb" + "(241, 167, 167)"}, broadcast=True)
-                        emit("chat", {"message":f"{user} add project time {time1} to {time2}", "color":"rgb" + "(241, 167, 167)"}, broadcast=True)
+                    trans.write_to_table(setting.storage, mat) # 卡進.json
+                    emit("chat", {"message":f"{username} add project time {time1+7} to {time2+7}", "color":"rgb" + "(241, 167, 167)"}, broadcast=True)
+                ccc = 0
             elif tmp == "del":
                 y_lael = weektolocate(date)
                 start, end = timetolocate(time)
                 for i in range(start, end+1):
-                    tmp = find_username((i, y_lael), lock[str(y_lael)])
-                    if username == tmp:
-                        lock[str(y_lael)].pop((i, y_lael, tmp))
+                    if mat[i][y_lael]:
+                        ccc = 1
+                if username not in mat[i][y_lael]: # 有衝突
+                        emit("error", f"can't delete {mat[i][y_lael]}'s private time")
+                else: # 無衝突
+                    for i in range(start, end+1):
+                        mat[i][y_lael].remove(username)
                         emit("light_table", {"locate":(i, y_lael), "color":"white"}, broadcast=True)
-                        emit("chat", {"message":f"{tmp} add project time {time1} to {time2}", "color":"black"}, broadcast=True)
-                    ## username不在lock 中 == 沒有東西/是lab的東西
-                    # elif tmp == False:
-                    #     emit("light_table", {"locate":(i, y_lael), "color":"white"}, broadcast=True)
-                    else:
-                        emit("error", f"can't delete {tmp}'s private time")
+                    trans.write_to_table(setting.storage, mat)
+                    emit("chat", {"message":f"{username} delete time {time1+7} to {time2+7}", "color":"black"}, broadcast=True)
+                ccc = 0
             elif tmp == "pri":
+                # done
                 y_lael = weektolocate(date)
                 start, end = timetolocate(time)
                 for i in range(start, end+1):
-                    lock[str(y_lael)].append((i, y_lael, username))
+                    mat[i][y_lael].append(username)
                     emit("light_table", {"locate":(i, y_lael), "color":"rgb" + f"{color}"}, broadcast=True)
-                    emit("chat", {"message":f"{user} add project time {time1} to {time2}", "color":"rgb" + f"{color}"}, broadcast=True)
+                emit("chat", {"message":f"{username} add private time {time1+7} to {time2+7}", "color":"rgb" + f"{color}"}, broadcast=True)
+                trans.write_to_table(setting.storage, mat)
     else:
-        emit("chat", {"message": message, "username": username, "color":"rgb" + f"{color}"}, broadcast=True)
+        # done
+        text = {"message": message, "username": username, "color":"rgb" + f"{color}"}
+        emit("chat", text, broadcast=True)
+        trans.add_to_chat(setting.storage, text)
 
-# @socketio.on("last_message")
-# def backtolastmessage():
 
 
 def weektolocate(str):
