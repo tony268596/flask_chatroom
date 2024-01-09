@@ -63,20 +63,33 @@
 
         #info {
             font-family: "Arial";
-            font-size: 15px;
+            font-size: 13px;
             text-align: left;
         }
 
         #update_users {
             font-family: "Arial";
-            font-size: 15px;
+            font-size: 18px;
             text-align: left;
+            font-weight: bold;
         }
         
         #container {
             width: 30%;
             display: flex;
             flex-direction: column;
+            background-color: #e5e5e5;
+        }
+        .command {
+            font-size: 14px;
+            font-weight: bold;
+            color: black;
+        }
+        .example {
+            padding-left: 20px;
+            font-style: italic;
+            font-size: 12px;
+            color: rgb(69, 70, 69);
         }
     </style>
 </head>
@@ -85,12 +98,17 @@
         <input type="text" id="username" placeholder="Username">
         <button id="join-btn">JOIN</button>
     </div>
-    <div id="container" style="display:none;">
-        <div id="info">
+    <div id="container" style="display:none; background-color: white;">
+        <div>
+            Totorial:<br>
             --使用@@新增指令--<br>
-            @@add date time -> 新增project time <br>
-            @@del date time -> 刪除 time <br>
-            @@pri date time -> 新增private time<br>
+            <span class="command">@add date time</span> -> 新增project time <br>
+                <span class="example">ex:@@add mo 8,10</span><br>
+            <span class="command">@del date time</span> -> 刪除 time <br>
+                <span class="example">ex:@@del mon 9</span><br>
+            <span class="command">@pri date time</span> -> 新增private time<br>
+                <span class="example">ex:@@pri tu 12,14</span><br>
+            Users:
         </div>
         <div id="update_users"> 
         </div>
@@ -155,6 +173,7 @@
 
         document.getElementById("message").addEventListener("keyup", function (event) {
             console.log(commandIndex)
+            // 如果按下enter, index++
             if (event.key == "Enter") {   
                 let message = document.getElementById("message").value;
                 if (message != ""){
@@ -173,7 +192,7 @@
                     }
                 }
              }else if (event.key == "ArrowDown"){
-                if (commandHistory.length > 0 && commandIndex < commandHistory.length) {
+                if (commandHistory.length > 0 && commandIndex < commandHistory.length-1) {
                     commandIndex++; // Move to the next command
                     document.getElementById("message").value = commandHistory[commandIndex]; // Set the input field value
                 }else{
@@ -221,7 +240,7 @@
 
             Object.keys(data).forEach(function(username) {
             var userItem = document.createElement('div');
-            userItem.textContent = username;
+            userItem.textContent = "> " + username;
             userItem.style.color = data[username]; // 設置文字顏色（如果需要）
             usrlist.appendChild(userItem);
         });
