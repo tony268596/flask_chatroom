@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>socketio_project</title>
+    <title>Chatroom</title>
     <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
     <style>
         body {
@@ -34,7 +34,7 @@
         }
 
         #chat {
-            width: 50%;
+            width: 100%;
             font-family: "Arial"
         }
 
@@ -68,6 +68,7 @@
         }
 
         #update_users {
+            border: black 1px solid;
             font-family: "Arial";
             font-size: 18px;
             text-align: left;
@@ -91,6 +92,9 @@
             font-size: 12px;
             color: rgb(69, 70, 69);
         }
+        #Totorial{
+            border: black 1px solid;
+        }
     </style>
 </head>
 <body>
@@ -98,21 +102,7 @@
         <input type="text" id="username" placeholder="Username">
         <button id="join-btn">JOIN</button>
     </div>
-    <div id="container" style="display:none; background-color: white;">
-        <div>
-            Totorial:<br>
-            --使用@@新增指令--<br>
-            <span class="command">@add date time</span> -> 新增project time <br>
-                <span class="example">ex:@@add mo 8,10</span><br>
-            <span class="command">@del date time</span> -> 刪除 time <br>
-                <span class="example">ex:@@del mon 9</span><br>
-            <span class="command">@pri date time</span> -> 新增private time<br>
-                <span class="example">ex:@@pri tu 12,14</span><br>
-            Users:
-        </div>
-        <div id="update_users"> 
-        </div>
-    </div>
+    
     <div id="table" style="display:none;">
         <table>
             {% for i in range(18) %}
@@ -142,14 +132,29 @@
             {% endfor %}
         </table>
     </div>
-    <div id="chat" style="display:none;">
-        <ul id="chat-messages">
-            {% for msg in data.message %}
-                <li style="color: {{ msg.color }}">{{ msg.username }}: {{ msg.message }}</li>
-            {% endfor %}
-        </ul>
-        <input type="text" id="message" placeholder="Enter a Message">
+    <div id="container" style="display:none; background-color: white;">
+        <div id = "Totorial">
+            <div style="font-size: ;">Totorial:<br></div>
+            --使用@@新增指令--<br>
+            <span class="command">@add date time</span> -> 新增project time <br>
+                <span class="example">ex:@@add mo 8,10</span><br>
+            <span class="command">@del date time</span> -> 刪除 time <br>
+                <span class="example">ex:@@del mon 9</span><br>
+            <span class="command">@pri date time</span> -> 新增private time<br>
+                <span class="example">ex:@@pri tu 12,14</span><br>
+        </div>
+        <div id="update_users"> 
+        </div>
+        <div id="chat" style="display:none;">
+            <ul id="chat-messages">
+                {% for msg in data.message %}
+                    <li style="color: {{ msg.color }}">> {{ msg.username }}: {{ msg.message }}</li>
+                {% endfor %}
+            </ul>
+            <input type="text" id="message" placeholder="Enter a Message">
+        </div>
     </div>
+    
     <script>
         const socket = io({autoConnect: false});
 
@@ -236,7 +241,7 @@
 
         socket.on("update_users", function(data){
             let usrlist = document.getElementById("update_users");
-            usrlist.innerHTML = ""
+            usrlist.innerHTML = "User:"
 
             Object.keys(data).forEach(function(username) {
             var userItem = document.createElement('div');

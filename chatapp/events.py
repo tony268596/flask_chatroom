@@ -13,8 +13,6 @@ colorsett = [(16,109,156),
              (61,89,171),
              (128,42,42)]
 
-# 用dict存他搜尋比較快
-lock = {"1":[], "2":[], "3":[],"4":[], "5":[], "6":[],"7":[]}
 lastcommand = []
 
 @socketio.on("connect")
@@ -27,9 +25,10 @@ def handle_user_join(username):
     if len(colorsett) == 0:
         emit("error", "userfull")
     else:
-        users[username] = (request.sid, colorsett[-1])
-        trans.user_color(setting.storage, username, f"rgb{colorsett[-1]}")
-        colorsett.pop()
+        if username not in users:
+            users[username] = (request.sid, colorsett[-1])
+            trans.user_color(setting.storage, username, f"rgb{colorsett[-1]}")
+            colorsett.pop()
 
         data = trans.read_json_file(setting.storage)
         usr = data.get("user", [])
@@ -45,7 +44,6 @@ def handle_new_message(message):
         if users[user][0] == request.sid:
             username = user
             color = users[user][1]
-    print(lock)
     if message[:2] == "@@":
         message = message[2:]
         tmp = message.split(" ")[0]
@@ -87,7 +85,10 @@ def handle_new_message(message):
                 else: # 無衝突
                     for i in range(start, end+1):
                         mat[i][y_lael].remove(username)
-                        emit("light_table", {"locate":(i, y_lael), "color":"white"}, broadcast=True)
+                        # if .json有人:
+                        #     抓json的人去light table
+                        # else:
+                        #     emit("light_table", {"locate":(i, y_lael), "color":"white"}, broadcast=True)
                     trans.write_to_table(setting.storage, mat)
                     emit("chat", {"message":f"{username} delete time {time1+7} to {time2+7}", "color":"black"}, broadcast=True)
                 ccc = 0

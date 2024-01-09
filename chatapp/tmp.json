@@ -1,5 +1,21 @@
 {
-    "message": [],
+    "message": [
+        {
+            "message": "hello",
+            "username": "tony",
+            "color": "rgb(128, 42, 42)"
+        },
+        {
+            "message": "hi",
+            "username": "tony",
+            "color": "rgb(128, 42, 42)"
+        },
+        {
+            "message": "hih",
+            "username": "tony",
+            "color": "rgb(128, 42, 42)"
+        }
+    ],
     "table": [
         [
             [],
@@ -183,6 +199,7 @@
         ]
     ],
     "user": {
-        "tony": "rgb(128, 42, 42)"
+        "tony": "rgb(128, 42, 42)",
+        "aaa": "rgb(61, 89, 171)"
     }
 }
